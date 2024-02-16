@@ -1,0 +1,33 @@
+nav{
+    background-color: var(--green-color);
+    padding: 10px;
+    height: 104px;
+    display: flex;
+    justify-content: space-between;
+    #logo{
+        img{
+            height: 70px;
+            margin: 5px;
+            display: inline-block;
+        }
+    }
+    #btn-container{
+        display: inline-block;
+        div{
+            display: inline-block;
+            padding: 10px;
+            
+        }
+        #settings{
+            img{
+                width: 50px;
+            }
+        }
+        #logout{
+            img{
+                width: 42px;
+            }
+        }
+        
+    }
+}
