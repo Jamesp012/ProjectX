@@ -16,7 +16,7 @@
         </div>
         <div id="btn-container">
             <div id="settings">
-                <img src="/Web-App/assets/icons8-settings-48.png" alt="">
+                <img src="/Web-App/assets/icons8-settings-48 (1).png" alt="">
                 <p>Settings</p>
             </div>
             <div id="logout">
@@ -26,109 +26,120 @@
         </div>
     </nav>
 
-    <div>
+    <div id="dashboard-container">
 
         <!-- Control System  -->
 
         <aside>
-
-            <h1>Control System</h1>
-            <div>
+            <div class="header">
+                <img src="/Web-App/assets/icons8-control-24 (1).png" alt="">
+                <h1>Control System</h1>
+            </div>
+            <div class="cs-temperature">
                 <h3>Temperature Range</h3>
                 <table>
                     <tr>
-                        <td>Low Temperature Trigger</td>
-                        <td>High Temeperature Trigger</td>
+                        <td class="left">Low Temperature Trigger</td>
+                        <td class="right">18deg</td>
                     </tr>
                     <tr>
-                        <td>18deg</td>
-                        <td>20deg</td>
+                        <td class="left">High Temeperature Trigger</td>
+                        <td class="right">20deg</td>
                     </tr>
                 </table>
             </div>
 
-            <div>
+            <div class="cs-fanspeed">
                 <h3>Fan Speed</h3>
                 <table>
                     <tr>
-                        <td>Low</td>
-                        <td>Mid</td>
-                        <td>High</td>
+                        <td class="left">Low</td>
+                        <td class="right">40deg</td>
                     </tr>
                     <tr>
-                        <td>30deg</td>
-                        <td>40deg</td>
-                        <td>50deg</td>
+                        <td class="left">Mid</td>
+                        <td class="right">40deg</td>
+                    </tr>
+                    <tr>
+                        <td class="left">High</td>
+                        <td class="right">50deg</td>
                     </tr>
                 </table>
             </div>
 
-            <div>
+            <div class="cs-waterlvl">
                 <h3>Water Level</h3>
-                <table></table>
-                <tr>
-                    <td>Low</td>
-                    <td>Mid</td>
-                    <td>High</td>
-                </tr>
-                <tr>
-                    <td>cm</td>
-                    <td>cm</td>
-                    <td>cm</td>
-                </tr>
+                <table>
+                    <tr>
+                        <td class="left">Low</td>
+                        <td class="right">cm</td>
+                    </tr>
+                    <tr>
+                        <td class="left">Mid</td>
+                        <td class="right">cm</td>
+                    </tr>
+                    <tr>
+                        <td class="left">High</td>
+                        <td class="right">cm</td>
+                    </tr>
+                </table>
             </div>
         </aside>
 
         <!-- Dashboard -->
 
-        <main class="Dashboard">
+        <div id="dashboard-main">
             <!-- Dashboard Logo -->
-            <h2>Dashboard</h2>
+            <div id="dashboard-main-header">
+                <h2>Dashboard</h2>
+            </div>
             <!-- Green Bar line -->
-            <div>
+            <div id="dashboard-dashboard-upper">
                 <div class="temperature">
                     <h4>TEMPERATURE</h4>
-                    <!-- Temperature Index Circle -->
+                    <span class="progress-bar"></span>
                     <p>Temperature</p>
-                    <!-- Imdicator -->
+                    <button class="indicator">HIGH</button>
                 </div>
                 <div class="humidity">
-                    <h4>Humidity</h4>
-                    <!-- Humidity Index Circle -->
+                    <h4>HUMIDITY</h4>
+                    <span class="progress-bar"></span>
                     <p>Humidity</p>
-                    <!-- Imdicator -->
+                    <button class="indicator">HIGH</button>
                 </div>
                 <div class="waterlvl">
-                    <h4>Water Level</h4>
-                    <!-- Water Level Index Circle -->
+                    <h4>WATER LEVEL</h4>
+                    <span class="progress-bar"></span>
                     <p>Water Level</p>
-                    <!-- Imdicator -->
+                    <button class="indicator">HIGH</button>
                 </div>
             </div>
-            <div>
-                <div>
-                    <h4>COMPONENTS</h4>
-                    <p>Humidifier</p>
-                    <p>Water Pump</p>
-                    <p>LED Strip</p>
+            <div id="dashboard-dashboard-bottom">
+                <div id="bottom-left">
+                    <div id="components">
+                        <h4>COMPONENTS</h4>
+                        <p>Humidifier</p>
+                        <p>Water Pump</p>
+                        <p>LED Strip</p>
+                    </div>
+                    <div id="remarks">
+                        <h4>REMARKS</h4>
+                        <p>ON</p>
+                        <p>ON</p>
+                        <p>OFF</p>
+                    </div>
                 </div>
-                <div>
-                    <h4>REMARKS</h4>
-                    <p>ON</p>
-                    <p>ON</p>
-                    <p>OFF</p>
+                <div id="bottom-right">
+                    <div id="bottom-upper">
+                        <h4>SYSTEM STATUS</h4>
+                        <p>All Working</p>
+                    </div>
+                    <div id="bottom-lower">
+                        <button>SYSTEM CHECK</button>
+                    </div>
                 </div>
             </div>
-            <div>
-                <div>
-                    <h4>SYSTEM STATUS</h4>
-                    <p>All Working</p>
-                </div>
-                <div>
-                    <button>SYSTEM CHECK</button>
-                </div>
-            </div>
-        </main>
+        </div>
     </div>
 
 
