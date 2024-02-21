@@ -1,22 +1,24 @@
-nav{
+.dashboard-nav{
     background-color: var(--green-color);
     padding: 0.625rem;
     height: 6.5rem;
     display: flex;
-    justify-content: space-between;
-    #logo{
+    justify-content: space-between; 
+    width: 100%;
+    .dashboard-logo{
         img{
-            height: 4.375rem;
-            margin: 0.3125rem;
-            display: inline-block;
+            width: 620px;
         }
     }
-    #btn-container{
+    .dashboard-logo-mobile{
+        display: none;
+    }
+    .btn-container{
         display: inline-block;
         color: white;
         div{
             display: inline-block;
-            padding: 0.625rem;
+            padding: 0.3125rem 0.625rem;
             text-align: center;
         }
         img{
@@ -40,20 +42,19 @@ nav{
         border-radius: 1.5625rem;
         height: fit-content;
 
-        .header{
+        .dashboard-header{
             text-align: center;
             border-bottom: 0.0625rem solid #707070;
-            padding: 0.625rem 1.25rem ;
+            padding: 1.25rem 0.625rem 0.625rem 0.625rem;
             white-space: nowrap;
+
             img{
                 display: inline-block;
-                width: 1.5625rem;
             }
             h1{
                 display: inline-block;
-                color: var(--green-color);
-                margin: 0;
             }
+            
         }
 
         .cs-temperature, .cs-fanspeed, .cs-heating-element, .cs-waterlvl{
@@ -264,7 +265,7 @@ nav{
                 }
             }
             
-            #bottom-lower{
+            .bottom-lower{
                 
                 button{
                     padding: 1.25rem calc(33.33% - 1.25rem);

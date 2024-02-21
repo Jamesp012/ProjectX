@@ -33,7 +33,7 @@ body{
 
 body::after{
     content: '';
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
@@ -41,6 +41,7 @@ body::after{
     background-image: url(/Web-App/assets/bg.jpg);
     background-size: cover;
     background-repeat: no-repeat;
+    background-position: center;
     opacity: 0.53;
     z-index: -2;
     

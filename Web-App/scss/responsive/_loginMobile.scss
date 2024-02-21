@@ -1,0 +1,292 @@
+//for mobile    
+@media (max-width: 767px) {
+    body{
+        overflow-y: scroll;
+        .login-header, .forgot-header, .create-header{
+            min-width: 22.5625rem;
+            .logo{
+                background-size: 100%;
+                height: 6.25rem;
+                width: 90%;
+                min-width: 236px;
+                max-width: 28.25rem;
+            }
+        }
+            .login-form, .forgot-form, .create-form{
+                width: 90%;
+                
+            }
+            .login-form{
+                margin-top: 4rem;
+                min-width: 17.25rem;
+                max-width: 19.8125rem;}
+
+            .forgot-form{
+                margin-top: 4rem;
+                min-width: 16.0625rem;
+                max-width: 17.25rem;
+                
+            }
+            .forgot-modal{
+                margin-top: 4rem;
+                min-width: 14.75rem;
+                max-width: 19.6875rem;
+                width: 50%;
+            }
+            .create-form{
+                min-width: 17.25rem;
+                max-width: 19.8125rem;}
+
+        // DASHBOARD
+
+        .dashboard-nav{
+            margin-top: 0;
+            min-width: 30.625rem;
+            .dashboard-logo{
+                display: none;
+            }
+            .dashboard-logo-mobile{
+                display: inline-block;
+                img{
+                    width: 250px;
+                }
+                
+            }
+            
+        }
+        
+        #dashboard-container{
+            display: block;
+            .dashboard-header{
+                padding: 20px 10px 10px 10px;
+                img{
+                    display: inline-block;
+                    width: 24px;
+                }
+                h1{
+                    
+                    display: inline-block;
+                }
+            }
+            aside{
+                margin: 2%;
+                justify-content: center;
+                min-width: 476px;
+                
+            }
+            #dashboard-main{
+                min-width: 476px;
+
+                #dashboard-dashboard-upper{
+                    .temperature, .humidity, .waterlvl{
+                        min-width: 123px;
+                        margin-right: 0;
+                        margin-left: 0;
+                    }
+                }
+
+                
+            }
+            #dashboard-dashboard-bottom{
+                #bottom-right{
+                    .bottom-lower{
+                        button{
+                            white-space:unset;
+                            font-size: 0.8rem;
+                        }
+                    }
+               
+                }
+            }
+            
+        }
+        
+            
+            
+    }
+
+   
+    
+    
+        
+
+    }
+
+// for Tablet
+@media (max-width:1023px) and (min-width:768px) { 
+    body {
+        overflow-y: scroll;
+        .login-header, header{
+            width: 100%;
+            .logo{
+                max-width: 28.5625rem;
+                max-height: 6.25rem;
+            }
+        }
+        .login-main, .forgot-main{
+            .login-form, .forgot-form{
+                min-width: 19.8125rem;
+            }
+        }
+        .forgot-form{
+            min-width: 19.6875rem;     
+        }
+        .forgot-modal{
+            margin-top: 4rem;
+            width: 50%;
+            min-width: 19.6875rem;
+            max-width: 19.6875rem;
+        }
+        .create-form{
+            min-width: 19.8125rem;
+            max-width: auto;
+        } 
+
+    //Dashboard
+
+    .dashboard-nav{
+        margin-top: 0;
+        .dashboard-nav{
+            min-width: 30.625rem;
+            .dashboard-logo{
+                display: none;
+            }
+            .dashboard-logo-mobile{
+                display: inline-block;
+                img{
+                    width: 250px;
+                }
+                
+            }
+            
+        }
+        
+        #dashboard-container{
+            display: block;
+            .dashboard-header{
+                padding: 20px 10px 10px 10px;
+                img{
+                    display: inline-block;
+                    width: 24px;
+                }
+                h1{
+                    
+                    display: inline-block;
+                }
+            }
+            aside{
+                margin: 2%;
+                justify-content: center;
+                min-width: 476px;
+                
+            }
+            #dashboard-main{
+                min-width: 476px;
+
+                #dashboard-dashboard-upper{
+                    .temperature, .humidity, .waterlvl{
+                        min-width: 123px;
+                        margin-right: 0;
+                        margin-left: 0;
+                    }
+                }
+
+                
+            }
+            #dashboard-dashboard-bottom{
+                #bottom-right{
+                    .bottom-lower{
+                        button{
+                            white-space:unset;
+                            font-size: 0.8rem;
+                        }
+                    }
+               
+                }
+            }
+            
+        };
+        .dashboard-logo{
+            display: none;
+        }
+        .dashboard-logo-mobile{
+            display: inline-block;
+            img{
+                width: 250px;
+            }
+            
+        }
+        
+    }
+    
+    #dashboard-container{
+        display: block;
+        .dashboard-header{
+            padding: 20px 10px 10px 10px;
+            img{
+                display: inline-block;
+                width: 24px;
+            }
+            h1{
+                
+                display: inline-block;
+            }
+        }
+        aside{
+            margin: 2%;
+            justify-content: center;
+            min-width: 476px;
+            
+        }
+        #dashboard-main{
+            min-width: 476px;
+
+            #dashboard-dashboard-upper{
+                .temperature, .humidity, .waterlvl{
+                    min-width: 123px;
+                    margin-right: 0;
+                    margin-left: 0;
+                }
+            }
+
+            
+        }
+        #dashboard-dashboard-bottom{
+            #bottom-right{
+                .bottom-lower{
+                    button{
+                        white-space:unset;
+                        font-size: 0.8rem;
+                    }
+                }
+           
+            }
+        }
+        
+    }
+}
+    
+}
+
+// for Desktop
+
+.header{
+    padding: 10px;
+    width: 100%;
+    background-color: var(--green-color);
+    text-align: center;
+    height: fit-content;
+}
+
+.logo{
+    background-image: url('/Web-App/assets/rodeo1.png');
+        background-size: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        max-width: 457px;
+        height: 6.25em;
+        margin: 0 auto;
+}
+
+
+

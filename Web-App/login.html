@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/dist/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10,19 +10,20 @@
     <title>Optimized Germination System</title>
 </head>
 <body>
-    <header>
-        <span><img src="/Web-App/assets/rodeo (1).png" alt=""></span>
+    <header class="login-header">
+        <div class="logo"></div>
     </header>
-    <main>
-        <form action="">
+    <main class="login-main">
+        <form class="login-form" action="/login" method="post">
             <label for="">Username</label>
             <input type="text" name="" id="username">
             <label for="">Password</label>
             <input type="password" name="" id="password">
+            <p class="modal">Incorrect Credentials</p>
             <button class="rubi-normal">Sign in</button>
             <div>
-                <a href="">Create Account</a>
-                <a href="">Forgot Password?</a>
+                <a href="/create-account">Create Account</a>
+                <a href="/forgot-password">Forgot Password?</a>
             </div>
         </form>
     </main>
