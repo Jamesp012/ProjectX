@@ -31,6 +31,11 @@
     <footer></footer>
 
     <script>
+        // Define the redirectToLogin function in the global scope
+        function redirectToLogin() {
+            window.location.href = "/"; // Redirect to login page
+        }
+    
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("create-account-btn").addEventListener("click", function(event) {
                 event.preventDefault(); // Prevent default form submission behavior
@@ -56,11 +61,10 @@
                 .catch(error => {
                     console.error("Error:", error);
                 });
-                function redirectToLogin() {
-                window.location.href = "/"; // Redirect to login page
-                }
             });
         });
+    </script>
+    
     </script>
 </body>
 </html>
