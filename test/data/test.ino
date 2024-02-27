@@ -16,10 +16,6 @@ struct UserData {
 const char* ssid = "GomezCorRegidor";
 const char* password = "MOneKTreyding";
 
-// Define the username and password
-const char* username = "admin";
-const char* user_password = "123456";
-
 ESP8266WebServer server(80);
 bool loggedIn = false;
 bool accountCreated = false; // Flag to track if an account has been created
@@ -45,8 +41,8 @@ void setup() {
   
   // Initialize EEPROM
   EEPROM.begin(EEPROM_SIZE);
-  // Clear EEPROM data
-  clearEEPROM();
+  // // Clear EEPROM data 
+  // clearEEPROM(); ---------------------------REMOVE THIS FOR DEBUGGING EEPROM------------------------------------
   // Set up routes to serve CSS and image files from SPIFFS
   server.on("/style.css", HTTP_GET, []() {
     Serial.println("Serving style.css");
@@ -54,7 +50,7 @@ void setup() {
   });
 
   // Login route
-  server.on("/", HTTP_POST, handleLoginPost);
+  server.on("/login", HTTP_POST, handleLoginPost);
   server.on("/", HTTP_GET, handleLogin);
 
   // Dashboard route - accessible only if logged in
@@ -138,6 +134,11 @@ void handleLoginPost() {
     String user = server.arg("username");
     String pass = server.arg("password");
 
+    Serial.print("Received Username: ");
+    Serial.println(user);
+    Serial.print("Received Password: ");
+    Serial.println(pass);
+
     if (checkCredentials(user, pass)) {
       loggedIn = true;
       server.sendHeader("Location", "/dashboard", true); // Redirect to dashboard after login
@@ -148,15 +149,22 @@ void handleLoginPost() {
   }
 }
 
+
 bool checkCredentials(String username, String password) {
   // Read user data from EEPROM
   UserData storedUserData;
   EEPROM.get(EEPROM_USER_DATA_ADDRESS, storedUserData);
 
+  Serial.print("Stored Username: ");
+  Serial.println(storedUserData.username);
+  Serial.print("Stored Password: ");
+  Serial.println(storedUserData.password);
+
   // Compare with provided credentials
   return (strcmp(username.c_str(), storedUserData.username) == 0 &&
           strcmp(password.c_str(), storedUserData.password) == 0);
 }
+
 
 void handleLogin() {
   Serial.println("Serving login.html");

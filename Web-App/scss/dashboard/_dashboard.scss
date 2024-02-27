@@ -10,6 +10,9 @@
             width: 620px;
         }
     }
+    #logout:active, #settings:active{
+        translate: -4px -4px;
+    }
     .dashboard-logo-mobile{
         display: none;
     }
