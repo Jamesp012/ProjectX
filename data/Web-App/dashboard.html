@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <title>Dashboard</title>
+</head>
+<body>
+    <nav class="dashboard-nav">
+        <div class="dashboard-logo">
+            <img src="https://github.com/Jamesp012/ProjectX/blob/main/Web-App/assets/rodeo2.png?raw=true" alt="">
+        </div>
+        <div class="dashboard-logo-mobile">
+            <img src="https://github.com/Jamesp012/ProjectX/blob/main/Web-App/assets/rodeoMobile.png?raw=true" alt="">
+        </div>
+        <div class="btn-container dropdown">
+            <div class="dropdown-content">
+                <div id="settings">
+                    <img src="https://github.com/Jamesp012/ProjectX/blob/main/Web-App/assets/icons8-settings-48%20(1).png?raw=true" alt="">
+                    <p id="settings">Settings</p>
+                </div>
+                <div id="logout">
+                    <img src="https://github.com/Jamesp012/ProjectX/blob/main/Web-App/assets/icons8-logout-64-new.png?raw=true" alt="">
+                    <p id="logout" href="/logout" >Logout</p>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="dashboard-container">
+
+        <!-- Control System  -->
+
+        <aside>
+            <div class="dashboard-header">
+                <img src="/Web-App/assets/icons8-control-24 (1).png" alt="">
+                <h1>Control System</h1>
+            </div>
+            <div class="cs-temperature">
+                <h3>Temperature Range</h3>
+                <table>
+                    <tr>
+                        <td class="left">Low Temperature Trigger</td>
+                        <td class="right">18deg</td>
+                    </tr>
+                    <tr>
+                        <td class="left">High Temeperature Trigger</td>
+                        <td class="right">20deg</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="cs-fanspeed">
+                <h3>Fan Speed</h3>
+                <table>
+                    <tr>
+                        <td class="left">Low</td>
+                        <td class="right">40deg</td>
+                    </tr>
+                    <tr>
+                        <td class="left">Mid</td>
+                        <td class="right">40deg</td>
+                    </tr>
+                    <tr>
+                        <td class="left">High</td>
+                        <td class="right">50deg</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="cs-heating-element">
+                <h3>Heating Element</h3>
+                <table>
+                    <tr>
+                        <td class="left">Low</td>
+                        <td class="right">40deg</td>
+                    </tr>
+                    <tr>
+                        <td class="left">Mid</td>
+                        <td class="right">40deg</td>
+                    </tr>
+                    <tr>
+                        <td class="left">High</td>
+                        <td class="right">50deg</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="cs-waterlvl">
+                <h3>Water Level</h3>
+                <table>
+                    <tr>
+                        <td class="left">Low</td>
+                        <td class="right">cm</td>
+                    </tr>
+                    <tr>
+                        <td class="left">Mid</td>
+                        <td class="right">cm</td>
+                    </tr>
+                    <tr>
+                        <td class="left">High</td>
+                        <td class="right">cm</td>
+                    </tr>
+                </table>
+            </div>
+        </aside>
+
+        <!-- Dashboard -->
+
+        <div id="dashboard-main">
+            <!-- Dashboard Logo -->
+            <div id="dashboard-main-header">
+                <img src="/Web-App/assets/icons8-dashboard-50 (1).png" alt="">
+                <h2>Dashboard</h2>
+            </div>
+            <!-- Green Bar line -->
+            <div id="dashboard-dashboard-upper">
+                <div class="temperature">
+                    <h4>TEMPERATURE</h4>
+                    <span class="progress-bar"></span>
+                    <p>Temperature</p>
+                    <button class="indicator">HIGH</button>
+                </div>
+                <div class="humidity">
+                    <h4>HUMIDITY</h4>
+                    <span class="progress-bar"></span>
+                    <p>Humidity</p>
+                    <button class="indicator">HIGH</button>
+                </div>
+                <div class="waterlvl">
+                    <h4>WATER LEVEL</h4>
+                    <span class="progress-bar"></span>
+                    <p>Water Level</p>
+                    <button class="indicator">HIGH</button>
+                </div>
+            </div>
+            <div id="dashboard-dashboard-bottom">
+                <div id="bottom-left">
+                    <div id="bottom-left-header">
+                        <h4>COMPONENTS</h4>
+                        <h4>REMARKS</h4>
+                    </div>
+                    <div id="bottom-left-content">
+                        <div id="components">
+                            <p>Humidifier</p>
+                            <p>Water Pump</p>
+                            <p>LED Strip</p>
+                            <p>Humidifier</p>
+                            <p>Water Pump</p>
+                            <p>LED Strip</p>
+                            <p>Humidifier</p>
+                            <p>Water Pump</p>
+                            <p>LED Strip</p>
+                            <p>Humidifier</p>
+                            <p>Water Pump</p>
+                            <p>LED Strip</p>
+                        </div>
+                        <div id="remarks">
+                            <p>ON</p>
+                            <p>ON</p>
+                            <p>OFF</p>
+                            <p>ON</p>
+                            <p>ON</p>
+                            <p>OFF</p>
+                            <p>ON</p>
+                            <p>ON</p>
+                            <p>OFF</p>
+                            <p>ON</p>
+                            <p>ON</p>
+                            <p>OFF</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="bottom-right">
+                    <div id="bottom-upper">
+                        <h4>SYSTEM STATUS</h4>
+                        <p>All Working</p>
+                    </div>
+                    <div class="bottom-lower">
+                        <button>SYSTEM CHECK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

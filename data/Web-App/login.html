@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <title>Optimized Germination System</title>
+</head>
+<body>
+    <header class="login-header">
+        <div class="logo"></div>
+    </header>
+    <main class="login-main">
+        <form class="login-form" id="login-form">
+            <label for="">Username</label>
+            <input type="text" name="" id="username">
+            <label for="">Password</label>
+            <input type="password" name="" id="password">
+            <p class="modal" id="error-message" style="display: none;">Incorrect Credentials</p>
+            <button class="rubi-normal" id="sign-in">Sign in</button>
+            <div>
+                <a href="/create-account">Create Account</a>
+                <a href="/forgot-password">Forgot Password?</a>
+            </div>
+        </form>
+    </main>
+    <footer></footer>
+
+    <script>
+        document.getElementById("sign-in").addEventListener("click", function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Reset error message if login is successful
+                        document.getElementById("error-message").style.display = "none";
+                    } else {
+                        // Display error message if login fails
+                        document.getElementById("error-message").style.display = "block";
+                    }
+                }
+            };
+
+            // Send a POST request to the ESP8266 server with the message "signin"
+            // The ESP8266 server will handle the rest, including checking credentials and redirecting
+            xhr.open("POST", "/login", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send("message=signin&username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password));
+        });
+    </script>
+</body>
+</html>
