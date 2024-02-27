@@ -16,9 +16,9 @@
     <main class="login-main">
         <form class="login-form" id="login-form">
             <label for="">Username</label>
-            <input type="text" name="" id="username">
+            <input type="text" name="username" id="username">
             <label for="">Password</label>
-            <input type="password" name="" id="password">
+            <input type="password" name="password" id="password">
             <p class="modal" id="error-message" style="display: none;">Incorrect Credentials</p>
             <button class="rubi-normal" id="sign-in">Sign in</button>
             <div>
@@ -36,22 +36,18 @@
             var username = document.getElementById("username").value;
             var password = document.getElementById("password").value;
     
-            // Create a FormData object to send the form data to the server
             var formData = new FormData();
             formData.append("username", username);
             formData.append("password", password);
     
-            // Send a POST request to the server
             fetch("/login", {
                 method: "POST",
                 body: formData
             })
             .then(response => {
                 if (response.ok) {
-                    // Redirect to the dashboard if login is successful
                     window.location.href = "/dashboard";
                 } else {
-                    // Display error message if login fails
                     document.getElementById("error-message").style.display = "block";
                 }
             })
@@ -60,6 +56,7 @@
             });
         });
     </script>
+    
     
 </body>
 </html>

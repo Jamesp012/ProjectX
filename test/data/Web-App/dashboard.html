@@ -186,6 +186,30 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Add event listener to logout button
+            document.getElementById("logout").addEventListener("click", function(event) {
+                event.preventDefault();
+                // Send logout request to server
+                fetch("/logout", {
+                    method: "GET"
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // If logout successful, redirect to login page
+                        window.location.href = "/";
+                    } else {
+                        // Handle logout error
+                        console.error("Error during logout");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            });
+        });
+    </script>
 
 
 </body>
