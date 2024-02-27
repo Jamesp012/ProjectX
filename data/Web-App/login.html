@@ -35,26 +35,31 @@
             
             var username = document.getElementById("username").value;
             var password = document.getElementById("password").value;
-
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        // Reset error message if login is successful
-                        document.getElementById("error-message").style.display = "none";
-                    } else {
-                        // Display error message if login fails
-                        document.getElementById("error-message").style.display = "block";
-                    }
+    
+            // Create a FormData object to send the form data to the server
+            var formData = new FormData();
+            formData.append("username", username);
+            formData.append("password", password);
+    
+            // Send a POST request to the server
+            fetch("/login", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to the dashboard if login is successful
+                    window.location.href = "/dashboard";
+                } else {
+                    // Display error message if login fails
+                    document.getElementById("error-message").style.display = "block";
                 }
-            };
-
-            // Send a POST request to the ESP8266 server with the message "signin"
-            // The ESP8266 server will handle the rest, including checking credentials and redirecting
-            xhr.open("POST", "/login", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.send("message=signin&username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password));
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
         });
     </script>
+    
 </body>
 </html>

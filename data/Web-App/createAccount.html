@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Your head content here -->
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <title>Create Account</title>
 </head>
 <body>
     <header class="create-header">
         <div class="logo"></div>
     </header>
     <main class="create-main">
-        <form class="create-form" action="/register" method="post">
+        <form class="create-form" id="create-account-form" action="/register" method="post">
             <label for="email">Email</label>
             <input type="email" name="email" id="email">
             <label for="username">Username</label>
@@ -17,7 +23,7 @@
             <input type="password" name="password" id="password">
             <button id="create-account-btn">Create Account</button>
         </form>
-        <div class="modal" id="create-account-success">
+        <div class="modal" id="create-account-success" style="display: none;">
             <h3>Creating Account Successful!</h3>
             <button onclick="redirectToLogin()">Sign In</button>
         </div>
@@ -25,33 +31,37 @@
     <footer></footer>
 
     <script>
-        document.getElementById("create-account-btn").addEventListener("click", function(event) {
-            event.preventDefault(); // Prevent default form submission behavior
-
-            var form = document.querySelector(".create-form");
-            var formData = new FormData(form);
-
-            fetch("/register", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Show modal upon successful account creation
-                    document.getElementById("create-account-success").style.display = "block";
-                } else {
-                    // Handle error if account creation fails
-                    alert("Error creating account. Please try again.");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("create-account-btn").addEventListener("click", function(event) {
+                event.preventDefault(); // Prevent default form submission behavior
+    
+                var form = document.querySelector(".create-form");
+                var formData = new FormData(form);
+    
+                fetch("/register", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Show modal upon successful account creation
+                        document.getElementById("create-account-success").style.display = "block";
+                    } else {
+                        // Handle error if account creation fails
+                        response.text().then(errorMessage => {
+                            alert("Error creating account: " + errorMessage);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
             });
+    
+            function redirectToLogin() {
+                window.location.href = "/login"; // Redirect to login page
+            }
         });
-
-        function redirectToLogin() {
-            window.location.href = "/login"; // Redirect to login page
-        }
     </script>
 </body>
 </html>

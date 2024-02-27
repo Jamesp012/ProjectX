@@ -22,6 +22,7 @@ const char* user_password = "123456";
 
 ESP8266WebServer server(80);
 bool loggedIn = false;
+bool accountCreated = false; // Flag to track if an account has been created
 
 void setup() {
   Serial.begin(9600);
@@ -41,9 +42,11 @@ void setup() {
     return;
   }
 
+  
   // Initialize EEPROM
   EEPROM.begin(EEPROM_SIZE);
-
+  // Clear EEPROM data
+  clearEEPROM();
   // Set up routes to serve CSS and image files from SPIFFS
   server.on("/style.css", HTTP_GET, []() {
     Serial.println("Serving style.css");
@@ -51,7 +54,8 @@ void setup() {
   });
 
   // Login route
-  server.on("/login", HTTP_POST, handleLogin);
+  server.on("/", HTTP_POST, handleLoginPost);
+  server.on("/", HTTP_GET, handleLogin);
 
   // Dashboard route - accessible only if logged in
   server.on("/dashboard", HTTP_GET, []() {
@@ -129,7 +133,7 @@ String getContentType(String filename) {
   return "text/html"; // Default to HTML content type
 }
 
-void handleLogin() {
+void handleLoginPost() {
   if (server.method() == HTTP_POST) {
     String user = server.arg("username");
     String pass = server.arg("password");
@@ -154,9 +158,14 @@ bool checkCredentials(String username, String password) {
           strcmp(password.c_str(), storedUserData.password) == 0);
 }
 
+void handleLogin() {
+  Serial.println("Serving login.html");
+  serveFile("Web-App/login.html");
+}
+
 void handleLogout() {
   loggedIn = false;
-  server.sendHeader("Location", "/login", true); // Redirect to login page after logout
+  server.sendHeader("Location", "/", true); // Redirect to login page after logout
   server.send(302, "text/plain", "");
 }
 
@@ -166,29 +175,44 @@ void handleForgotPassword() {
 }
 
 void handleCreateAccount() {
-  Serial.println("Serving createAccount.html");
-  serveFile("Web-App/createAccount.html");
+  if (!accountCreated) {
+    Serial.println("Serving createAccount.html");
+    serveFile("Web-App/createAccount.html");
+  } else {
+    // If an account has already been created, display a message indicating that only 1 account is allowed
+    server.send(200, "text/html", "<h1>Sorry, only 1 account is allowed.</h1>");
+  }
 }
 
 void handleRegister() {
-  String email = server.arg("email");
-  String username = server.arg("username");
-  String password = server.arg("password");
+  if (server.method() == HTTP_POST) {
+    String email = server.arg("email");
+    String username = server.arg("username");
+    String password = server.arg("password");
 
-  // Validate input (e.g., check if email/username is unique, password meets requirements, etc.)
+    // Validate input (e.g., check if email/username is unique, password meets requirements, etc.)
+    // Add your validation logic here
 
-  // Create user data structure
-  UserData userData;
-  email.toCharArray(userData.email, sizeof(userData.email));
-  username.toCharArray(userData.username, sizeof(userData.username));
-  password.toCharArray(userData.password, sizeof(userData.password));
+    // Create user data structure
+    UserData userData;
+    email.toCharArray(userData.email, sizeof(userData.email));
+    username.toCharArray(userData.username, sizeof(userData.username));
+    password.toCharArray(userData.password, sizeof(userData.password));
 
-  // Store user information in EEPROM
-  storeUserData(userData);
+    // Store user information in EEPROM
+    storeUserData(userData);
 
-  // Redirect to login page after registration
-  redirectToLogin();
+    // Set the flag to indicate that an account has been created
+    accountCreated = true;
+
+    // Redirect to login page after registration
+    redirectToLogin();
+  } else {
+    // If the request method is not POST, send a 405 Method Not Allowed response
+    server.send(405, "text/plain", "Method Not Allowed");
+  }
 }
+
 
 void storeUserData(UserData userData) {
   EEPROM.put(EEPROM_USER_DATA_ADDRESS, userData);
@@ -196,9 +220,21 @@ void storeUserData(UserData userData) {
 }
 
 void redirectToLogin() {
-  server.sendHeader("Location", "/login", true); // Redirect to login page
+  server.sendHeader("Location", "/", true); // Redirect to login page
   server.send(302, "text/plain", "");
 }
+
+// Removing username, password, and email from EEPROM
+void clearEEPROM() {
+  UserData emptyUserData;
+  memset(emptyUserData.email, 0, sizeof(emptyUserData.email)); // Clear email
+  memset(emptyUserData.username, 0, sizeof(emptyUserData.username)); // Clear username
+  memset(emptyUserData.password, 0, sizeof(emptyUserData.password)); // Clear password
+
+  EEPROM.put(EEPROM_USER_DATA_ADDRESS, emptyUserData); // Store empty data in EEPROM
+  EEPROM.commit();
+}
+
 
 void handleNotFound() {
   server.send(404, "text/plain", "Not found");
