@@ -100,6 +100,12 @@
             }
             
         }
+
+        .create-main {
+            .modal{
+                min-width: 17.25rem;
+            }
+        }
         
             
             
@@ -265,6 +271,11 @@
         
     }
 }
+    .create-main {
+        .modal{
+            min-width: 19.8125rem;
+        }
+    }
     
 }
 
@@ -288,5 +299,11 @@
         margin: 0 auto;
 }
 
+body{
+    button:active{
+        background-color: var(--greener-color);
+        transform: translateY(4px);
+    }
+}
 
 
