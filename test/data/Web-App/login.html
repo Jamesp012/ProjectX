@@ -20,6 +20,7 @@
             <label for="">Password</label>
             <input type="password" name="password" id="password">
             <p class="modal" id="error-message" style="display: none;">Incorrect Credentials</p>
+            <p id="limit">You already created account. The account limit is only 1.</p>
             <button class="rubi-normal" id="sign-in">Sign in</button>
             <div>
                 <a href="/create-account">Create Account</a>
@@ -30,6 +31,17 @@
     <footer></footer>
 
     <script>
+        
+        // Parse URL parameters to check if an account has been created
+        const urlParams = new URLSearchParams(window.location.search);
+        const accountCreated = urlParams.get('accountCreated');
+
+        if (accountCreated === 'true') {
+            // Set the display property of the 'limit' element to 'block'
+            document.getElementById('limit').style.display = 'block';
+        }
+
+
         document.getElementById("sign-in").addEventListener("click", function(event) {
             event.preventDefault(); // Prevent the default form submission
             
