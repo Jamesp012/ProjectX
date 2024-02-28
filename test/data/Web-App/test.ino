@@ -7,7 +7,7 @@
 #define EEPROM_SIZE 512
 #define EEPROM_USER_DATA_ADDRESS 0
 
-struct UserData {
+struct UserData { 
   char email[50];
   char username[50];
   char password[50];
