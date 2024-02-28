@@ -188,7 +188,12 @@ void handleCreateAccount() {
     serveFile("Web-App/createAccount.html");
   } else {
     // If an account has already been created, display a message indicating that only 1 account is allowed
-    server.send(200, "text/html", "<h1>Sorry, only 1 account is allowed.</h1>");
+    if (accountCreated) {
+      server.sendHeader("Location", "/login?accountCreated=true", true);
+    } else {
+      server.sendHeader("Location", "/login?accountCreated=false", true);
+    }
+    server.send(302, "text/plain", "");
   }
 }
 
