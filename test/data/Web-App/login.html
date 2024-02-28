@@ -23,13 +23,9 @@
         function redirectToCreateAccount() {
             // Send a GET request to the server to check if an account has been created
             const urlParams = new URLSearchParams(window.location.search);
-            const accountCreated = urlParams.get('accountCreated');
-<<<<<<< HEAD
+        const accountCreated = urlParams.get('accountCreated');
             if (accountCreated === 'true') {
-=======
-            if(accountCreated === 'true'){
->>>>>>> 51ab62ce30aa317b0b41b9d1f96994b7b9a9cf73
-                document.getElementById('limit').style.display = 'block';
+            document.getElementById('limit').style.display = 'block';
             }else{
                 window.location.href = '/create-account';
             }
