@@ -25,7 +25,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const accountCreated = urlParams.get('accountCreated');
             if (accountCreated === 'true') {
-            document.getElementById('limit').style.display = 'block';
+                document.getElementById('limit').style.display = 'block';
             }else{
                 window.location.href = '/create-account';
             }
