@@ -45,11 +45,11 @@
                 <table>
                     <tr>
                         <td class="left">Low Temperature Trigger</td>
-                        <td class="right">18deg</td>
+                        <td class="right" id="tempClowTrig">18deg</td>
                     </tr>
                     <tr>
                         <td class="left">High Temeperature Trigger</td>
-                        <td class="right">20deg</td>
+                        <td class="right" id="tempChighTrig">20deg</td>
                     </tr>
                 </table>
             </div>
@@ -59,15 +59,15 @@
                 <table>
                     <tr>
                         <td class="left">Low</td>
-                        <td class="right">40deg</td>
+                        <td class="right" id="fanLow">40deg</td>
                     </tr>
                     <tr>
                         <td class="left">Mid</td>
-                        <td class="right">40deg</td>
+                        <td class="right" id="fanMid">40deg</td>
                     </tr>
                     <tr>
                         <td class="left">High</td>
-                        <td class="right">50deg</td>
+                        <td class="right" id="fanHigh">50deg</td>
                     </tr>
                 </table>
             </div>
@@ -76,15 +76,15 @@
                 <table>
                     <tr>
                         <td class="left">Low</td>
-                        <td class="right">40deg</td>
+                        <td class="right" id="HELow">40deg</td>
                     </tr>
                     <tr>
                         <td class="left">Mid</td>
-                        <td class="right">40deg</td>
+                        <td class="right" id="HEMid">40deg</td>
                     </tr>
                     <tr>
                         <td class="left">High</td>
-                        <td class="right">50deg</td>
+                        <td class="right" id="HEHigh">50deg</td>
                     </tr>
                 </table>
             </div>
@@ -94,14 +94,6 @@
                 <table>
                     <tr>
                         <td class="left">Low</td>
-                        <td class="right">cm</td>
-                    </tr>
-                    <tr>
-                        <td class="left">Mid</td>
-                        <td class="right">cm</td>
-                    </tr>
-                    <tr>
-                        <td class="left">High</td>
                         <td class="right">cm</td>
                     </tr>
                 </table>
@@ -120,20 +112,20 @@
             <div id="dashboard-dashboard-upper">
                 <div class="temperature">
                     <h4>TEMPERATURE</h4>
-                    <span class="progress-bar"></span>
+                    <span class="progress-bar" id='DHTtempC'></span>
                     <p>Temperature</p>
                     <button class="indicator">HIGH</button>
                 </div>
                 <div class="humidity">
                     <h4>HUMIDITY</h4>
-                    <span class="progress-bar"></span>
+                    <span class="progress-bar" id="DHThumid"></span>
                     <p>Humidity</p>
                     <button class="indicator">HIGH</button>
                 </div>
                 <div class="waterlvl">
-                    <h4>WATER LEVEL</h4>
+                    <h4>HEATING ELEMENT</h4>
                     <span class="progress-bar"></span>
-                    <p>Water Level</p>
+                    <p>Temperature</p>
                     <button class="indicator">HIGH</button>
                 </div>
             </div>
@@ -189,6 +181,15 @@
             var dropdown = document.getElementsByClassName("dropdown-content")[0];
             dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
         };
+
+        $(document).ready(function(){
+            // Make an AJAX request to fetch sensor data
+            $.getJSON("/get-sensor-data", function(data){
+                var DHTtempC = data.DHT22TempC;
+
+                $('#DHTtempC').val(DHTtempC);
+            })
+        });
     </script>
 </body>
 </html>
