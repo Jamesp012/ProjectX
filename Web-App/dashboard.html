@@ -17,9 +17,9 @@
         <div class="dashboard-logo-mobile">
             <img src="/Web-App/assets/rodeoMobile.png" alt="">
         </div>
-        <div class="btn-container dropdown">
-            <div class="dropdown-content">
-                <div id="settings" ">
+        <div class="container">
+            <div>
+                <div id="settings">
                     <img src="/Web-App/assets/icons8-settings-48 (1).png" alt="">
                     <p>Settings</p>
                 </div>
@@ -184,6 +184,11 @@
         </div>
     </div>
 
-
+    <script>
+        document.getElementById("settings").onclick = function() {
+            var dropdown = document.getElementsByClassName("dropdown-content")[0];
+            dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+        };
+    </script>
 </body>
 </html>
