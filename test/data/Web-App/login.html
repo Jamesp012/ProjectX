@@ -1,35 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/dist/style.css">
+    <link rel="stylesheet" href="/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-    <title>Login</title>
+    <title>Optimized Germination System</title>
 </head>
 <body>
-    <h1>Login</h1>
-    <form action="/login" method="post">
-        Username: <input type="text" name="username"><br>
-        Password: <input type="password" name="password"><br>
-        <input type="submit" value="Login">
-    </form>
-    <p id="limit" style="display: none;">You already created an account. The account limit is only 1.</p>
-    <button onclick="redirectToCreateAccount()">Create Account</button>
+    <header class="login-header">
+        <div class="logo"></div>
+    </header>
+    <main class="login-main">
+        <form class="login-form" id="login-form">
+            <label for="">Username</label>
+            <input type="text" name="" id="username">
+            <label for="">Password</label>
+            <input type="password" name="" id="password">
+            <p class="modal" id="error-message" style="display: none;">Incorrect Credentials</p>
+            <button class="rubi-normal" id="sign-in">Sign in</button>
+            <div>
+                <a href="/create-account">Create Account</a>
+                <a href="/forgot-password">Forgot Password?</a>
+            </div>
+        </form>
+    </main>
+    <footer></footer>
 
     <script>
-        function redirectToCreateAccount() {
-            // Send a GET request to the server to check if an account has been created
-            const urlParams = new URLSearchParams(window.location.search);
-        const accountCreated = urlParams.get('accountCreated');
-            if (accountCreated === 'true') {
-            document.getElementById('limit').style.display = 'block';
-            }else{
-                window.location.href = '/create-account';
-            }
-        }
-    </script> 
+        document.getElementById("sign-in").addEventListener("click", function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+    
+            // Create a FormData object to send the form data to the server
+            var formData = new FormData();
+            formData.append("username", username);
+            formData.append("password", password);
+    
+            // Send a POST request to the server
+            fetch("/login", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to the dashboard if login is successful
+                    window.location.href = "/dashboard";
+                } else {
+                    // Display error message if login fails
+                    document.getElementById("error-message").style.display = "block";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    </script>
+    
 </body>
 </html>

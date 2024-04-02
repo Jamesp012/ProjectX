@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/dist/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
@@ -12,20 +12,20 @@
 <body>
     <nav class="dashboard-nav">
         <div class="dashboard-logo">
-            <img src="https://github.com/Jamesp012/ProjectX/blob/main/Web-App/assets/rodeo2.png?raw=true" alt="">
+            <img src="/Web-App/assets/rodeo2.png" alt="">
         </div>
         <div class="dashboard-logo-mobile">
-            <img src="https://github.com/Jamesp012/ProjectX/blob/main/Web-App/assets/rodeoMobile.png?raw=true" alt="">
+            <img src="/Web-App/assets/rodeoMobile.png" alt="">
         </div>
-        <div class="btn-container dropdown">
-            <div class="dropdown-content">
+        <div class="container">
+            <div>
                 <div id="settings">
-                    <img src="https://github.com/Jamesp012/ProjectX/blob/main/Web-App/assets/icons8-settings-48%20(1).png?raw=true" alt="">
-                    <p id="settings">Settings</p>
+                    <img src="/Web-App/assets/icons8-settings-48 (1).png" alt="">
+                    <p>Settings</p>
                 </div>
                 <div id="logout">
-                    <img src="https://github.com/Jamesp012/ProjectX/blob/main/Web-App/assets/icons8-logout-64-new.png?raw=true" alt="">
-                    <p id="logout" href="/logout" >Logout</p>
+                    <img src="/Web-App/assets/icons8-logout-64-new.png" alt="">
+                    <p>Logout</p>
                 </div>
             </div>
         </div>
@@ -45,11 +45,11 @@
                 <table>
                     <tr>
                         <td class="left">Low Temperature Trigger</td>
-                        <td class="right">18deg</td>
+                        <td class="right" id="tempClowTrig">18deg</td>
                     </tr>
                     <tr>
                         <td class="left">High Temeperature Trigger</td>
-                        <td class="right">20deg</td>
+                        <td class="right" id="tempChighTrig">20deg</td>
                     </tr>
                 </table>
             </div>
@@ -59,15 +59,15 @@
                 <table>
                     <tr>
                         <td class="left">Low</td>
-                        <td class="right">40deg</td>
+                        <td class="right" id="fanLow">40deg</td>
                     </tr>
                     <tr>
                         <td class="left">Mid</td>
-                        <td class="right">40deg</td>
+                        <td class="right" id="fanMid">40deg</td>
                     </tr>
                     <tr>
                         <td class="left">High</td>
-                        <td class="right">50deg</td>
+                        <td class="right" id="fanHigh">50deg</td>
                     </tr>
                 </table>
             </div>
@@ -76,15 +76,15 @@
                 <table>
                     <tr>
                         <td class="left">Low</td>
-                        <td class="right">40deg</td>
+                        <td class="right" id="HELow">40deg</td>
                     </tr>
                     <tr>
                         <td class="left">Mid</td>
-                        <td class="right">40deg</td>
+                        <td class="right" id="HEMid">40deg</td>
                     </tr>
                     <tr>
                         <td class="left">High</td>
-                        <td class="right">50deg</td>
+                        <td class="right" id="HEHigh">50deg</td>
                     </tr>
                 </table>
             </div>
@@ -94,14 +94,6 @@
                 <table>
                     <tr>
                         <td class="left">Low</td>
-                        <td class="right">cm</td>
-                    </tr>
-                    <tr>
-                        <td class="left">Mid</td>
-                        <td class="right">cm</td>
-                    </tr>
-                    <tr>
-                        <td class="left">High</td>
                         <td class="right">cm</td>
                     </tr>
                 </table>
@@ -120,20 +112,20 @@
             <div id="dashboard-dashboard-upper">
                 <div class="temperature">
                     <h4>TEMPERATURE</h4>
-                    <span class="progress-bar"></span>
+                    <span class="progress-bar" id='DHTtempC'></span>
                     <p>Temperature</p>
                     <button class="indicator">HIGH</button>
                 </div>
                 <div class="humidity">
                     <h4>HUMIDITY</h4>
-                    <span class="progress-bar"></span>
+                    <span class="progress-bar" id="DHThumid"></span>
                     <p>Humidity</p>
                     <button class="indicator">HIGH</button>
                 </div>
                 <div class="waterlvl">
-                    <h4>WATER LEVEL</h4>
-                    <span class="progress-bar"></span>
-                    <p>Water Level</p>
+                    <h4>HEATING ELEMENT</h4>
+                    <span class="progress-bar" id="DStempC"></span>
+                    <p>Temperature</p>
                     <button class="indicator">HIGH</button>
                 </div>
             </div>
@@ -179,38 +171,29 @@
                         <h4>SYSTEM STATUS</h4>
                         <p>All Working</p>
                     </div>
-                    <div class="bottom-lower">
-                        <button>SYSTEM CHECK</button>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Add event listener to logout button
-            document.getElementById("logout").addEventListener("click", function(event) {
-                event.preventDefault();
-                // Send logout request to server
-                fetch("/logout", {
-                    method: "GET"
-                })
-                .then(response => {
-                    if (response.ok) {
-                        // If logout successful, redirect to login page
-                        window.location.href = "/";
-                    } else {
-                        // Handle logout error
-                        console.error("Error during logout");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                });
-            });
+        document.getElementById("settings").onclick = function() {
+            var dropdown = document.getElementsByClassName("dropdown-content")[0];
+            dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+        };
+
+        $(document).ready(function(){
+            // Make an AJAX request to fetch sensor data
+            $.getJSON("/get-sensor-data", function(data){
+                var DHTtempC = data.DHT22TempC;
+                var DHThumid = data.DHT22Humid;
+                var DStempC = data.DS18B20TempC;
+
+                $('#DHTtempC').val(DHTtempC);
+                $('#DHThumid').val(DHThumid);
+                $('#DStempC').val(DStempC);
+            })
         });
     </script>
-
-
 </body>
 </html>

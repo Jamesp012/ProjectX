@@ -1,9 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-#include <WiFiManager.h>
 #include <FS.h>
 #include <EEPROM.h>
-#include <ArduinoJson.h> // Include the ArduinoJson library
 
 // Define EEPROM address to store user data
 #define EEPROM_SIZE 512
@@ -15,8 +13,8 @@ struct UserData {
   char password[50];
 };
 
-// const char* ssid = "GomezCorRegidor";
-// const char* password = "MOneKTreyding";
+const char* ssid = "GomezCorRegidor";
+const char* password = "MOneKTreyding";
 
 ESP8266WebServer server(80);
 bool loggedIn = false;
@@ -25,115 +23,67 @@ bool accountCreated = false; // Flag to track if an account has been created
 void setup() {
   Serial.begin(9600);
 
-  //TESTING
+  // Connect to WiFi
+  WiFi.begin(ssid, password);
+  Serial.println("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.print(".");
+  }
+  Serial.println("Connected to WiFi");
 
-  //WiFiManager, Local intialization. Once its business is done, there is no need to keep it around
-  WiFiManager wm;
-
-  // reset settings - wipe stored credentials for testing
-  // these are stored by the esp library
-  wm.resetSettings();
-
-  bool res;
-  res = wm.autoConnect("AutoConnectAP", "password"); // password protected ap
-  if (!res) {
-    Serial.println("Failed to connect");
-    // ESP.restart();
-  } else {
-    //if you get here you have connected to the WiFi
-    Serial.println("connected...yeey :)");
-
-    // Initialize SPIFFS
-    if (!SPIFFS.begin()) {
-      Serial.println("Failed to mount SPIFFS");
-      return;
-    }
-
-    // Initialize EEPROM
-    EEPROM.begin(EEPROM_SIZE);
-    // // Clear EEPROM data
-    // clearEEPROM(); ---------------------------REMOVE THIS FOR DEBUGGING EEPROM------------------------------------
-
-    // Set up routes to serve CSS and image files from SPIFFS
-    server.on("/style.css", HTTP_GET, []() {
-      Serial.println("Serving style.css");
-      serveFile("dist/style.css");
-    });
-
-    // Login route
-    server.on("/login", HTTP_POST, handleLoginPost);
-    server.on("/", HTTP_GET, handleLogin);
-
-    // Dashboard route - accessible only if logged in
-    server.on("/dashboard", HTTP_GET, []() {
-      if (loggedIn) {
-        Serial.println("Serving dashboard.html");
-        serveFile("Web-App/dashboard.html");
-      } else {
-        redirectToLogin();
-      }
-    });
-
-    // Forgot password route
-    server.on("/forgot-password", HTTP_GET, handleForgotPassword);
-
-    // Create account route
-    server.on("/create-account", HTTP_GET, handleCreateAccount);
-
-    // Logout route
-    server.on("/logout", HTTP_GET, handleLogout);
-
-    // Registration route
-    server.on("/register", HTTP_POST, handleRegister);
-
-    // Set up endpoint to serve PNG images
-    server.on("/images", HTTP_GET, []() {
-      Serial.println("Serving images");
-      serveImages();
-    });
-
-    //---DATA TRANSFER FROM ARDUINO TO ESP8266--//
-
-    // Define a route to handle AJAX requests for sensor data
-    server.on("/get-sensor-data", HTTP_GET, []() {
-      // Create a JSON object to hold sensor data
-      StaticJsonDocument<200> sensorDataJson;
-
-      // Add sensor data to the JSON object
-      sensorDataJson["temperature"] = sensorData.DHT22TempC;
-
-      // Serialize the JSON object to a string
-      String sensorDataString;
-      serializeJson(sensorDataJson, sensorDataString);
-
-      // Send the JSON string as the response
-      server.send(200, "application/json", sensorDataString);
-    });
-
-
-    // Connect to WiFi
-    // WiFi.begin(ssid, password);
-    // Serial.println("Connecting to WiFi");
-    // while (WiFi.status() != WL_CONNECTED) {
-    //   delay(1000);
-    //   Serial.print(".");
-    // }
-    // Serial.println("Connected to WiFi");
-
-    // Start server
-    server.begin();
-    Serial.println("HTTP server started");
-
-    //display ip address
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
-
+  // Initialize SPIFFS
+  if (!SPIFFS.begin()) {
+    Serial.println("Failed to mount SPIFFS");
+    return;
   }
 
+  
+  // Initialize EEPROM
+  EEPROM.begin(EEPROM_SIZE);
+  // // Clear EEPROM data 
+  // clearEEPROM(); ---------------------------REMOVE THIS FOR DEBUGGING EEPROM------------------------------------
+  // Set up routes to serve CSS and image files from SPIFFS
+  server.on("/style.css", HTTP_GET, []() {
+    Serial.println("Serving style.css");
+    serveFile("dist/style.css");
+  });
 
+  // Login route
+  server.on("/login", HTTP_POST, handleLoginPost);
+  server.on("/", HTTP_GET, handleLogin);
 
+  // Dashboard route - accessible only if logged in
+  server.on("/dashboard", HTTP_GET, []() {
+    if (loggedIn) {
+      Serial.println("Serving dashboard.html");
+      serveFile("Web-App/dashboard.html");
+    } else {
+      redirectToLogin();
+    }
+  });
 
+  // Forgot password route
+  server.on("/forgot-password", HTTP_GET, handleForgotPassword);
 
+  // Create account route
+  server.on("/create-account", HTTP_GET, handleCreateAccount);
+
+  // Logout route
+  server.on("/logout", HTTP_GET, handleLogout);
+
+  // Registration route
+  server.on("/register", HTTP_POST, handleRegister);
+
+  // Set up endpoint to serve PNG images
+  server.on("/images", HTTP_GET, []() {
+    Serial.println("Serving images");
+    serveImages();
+  });
+
+  // Start server
+  server.begin();
+  Serial.println("HTTP server started");
 }
 
 void loop() {
@@ -238,7 +188,12 @@ void handleCreateAccount() {
     serveFile("Web-App/createAccount.html");
   } else {
     // If an account has already been created, display a message indicating that only 1 account is allowed
-    server.send(200, "text/html", "<h1>Sorry, only 1 account is allowed.</h1>");
+    if (accountCreated) {
+      server.sendHeader("Location", "/login?accountCreated=true", true);
+    } else {
+      server.sendHeader("Location", "/login?accountCreated=false", true);
+    }
+    server.send(302, "text/plain", "");
   }
 }
 

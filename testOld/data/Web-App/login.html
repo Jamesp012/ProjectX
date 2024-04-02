@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/dist/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form action="/login" method="post">
+        Username: <input type="text" name="username"><br>
+        Password: <input type="password" name="password"><br>
+        <input type="submit" value="Login">
+    </form>
+    <p id="limit" style="display: none;">You already created an account. The account limit is only 1.</p>
+    <button onclick="redirectToCreateAccount()">Create Account</button>
+
+    <script>
+        function redirectToCreateAccount() {
+            // Send a GET request to the server to check if an account has been created
+            const urlParams = new URLSearchParams(window.location.search);
+        const accountCreated = urlParams.get('accountCreated');
+            if (accountCreated === 'true') {
+            document.getElementById('limit').style.display = 'block';
+            }else{
+                window.location.href = '/create-account';
+            }
+        }
+    </script> 
+</body>
+</html>
