@@ -3,6 +3,7 @@
 #include <WiFiManager.h>
 #include <FS.h>
 #include <EEPROM.h>
+#include <ArduinoJson.h>
 
 // Define EEPROM address to store user data
 #define EEPROM_SIZE 512
@@ -88,6 +89,9 @@ void setup() {
 
     // Registration route
     server.on("/register", HTTP_POST, handleRegister);
+
+    // Set up routes of the DATA
+    server.on("/get-sensor-data", HTTP_GET, handleGetSensorData);
 
     // Set up endpoint to serve PNG images
     server.on("/images", HTTP_GET, []() {
@@ -313,6 +317,8 @@ void handleNotFound() {
   server.send(404, "text/plain", "Not found");
 }
 
+
+// Function for getting time
 void sendNTPpacket() {
   memset(packetBuffer, 0, NTP_PACKET_SIZE);
   packetBuffer[0] = 0b11100011;
@@ -347,3 +353,98 @@ void printDigits(int digits) {
     Serial.print('0');
   Serial.print(digits);
 }
+
+// _______________________________________________
+
+
+void handleGetSensorData() {
+  // Create a JSON object
+  StaticJsonDocument<200> jsonDocument;
+
+  //Populate JSON object with sensor data
+  jsonDocument["DHT22TempC"] = sensor.DHT22TempC;
+  jsonDocument["DHT22Humid"] = sensor.DHT22Humid;
+  jsonDocument["DS18B20TempC"] = sensor.DS18B20TempC;
+
+  //DHT22 remarks
+  if(sensor.DHT22TempC > 0){
+    jsonDocument["DHT22State"] = "Working";
+  }else{
+    jsonDocument["DHT22State"] = "Not working";
+  }
+
+  //DS18B20 remarks 
+  if(sensor.DS18B20TempC > 0){
+    jsonDocument["DS18B20State"] = "Working";
+  }else{
+    jsonDocument["DS18B20State"] = "Not working";
+  }
+
+  //LDR remarks
+  if(sensor.LDR > 0){
+    jsonDocument["LDRState"] = "Working";
+  }else{
+    jsonDocument["LDRState"] = "Not working";
+  }
+
+  // Float Switch RESERVED remarks
+  if(sensor.FloatR == true){
+    jsonDocument["FloatR"] = "OFF";
+  }else{
+    jsonDocument["FloatR"] = "ON";
+  }
+
+  // Float Switch MAIN remarks
+  if(sensor.FloatM == true){
+    jsonDocument["FloatM"] = "OFF";
+  }else{
+    jsonDocument["FloatM"] = "ON";
+  }
+
+  // Heating Element remarks
+  if(sensor.DS18B20TempC > 0 && DHTReading == 1){
+    jsonDocument["HeatingElement"] = "Heating";
+  }else if(sensor.DS18B20TempC > 0 && DHTReading == 2){
+    jsonDocument["HeatingElement"] = "Stabilizing"
+  }else if(sensor.DS18B20TempC > 0 && DHTReading == 3){
+    jsonDocument["HeatingElement"] = "Cooling" 
+  }
+
+  // LED_Light remarks
+  if(actuator.LED_Light == true){
+    jsonDocument["LEDLight"] = "ON";
+  }else{
+    jsonDocument["LEDLight"] = "OFF";
+  }
+
+  // Ultasonic Atomizer remarks
+  if(actuator.Ultrasonic_Atomizer == true){
+    jsonDocument["UltrasonicAtomizer"] = "ON";
+  }else{
+    jsonDocument["UltrasonicAtomizer"] = "OFF";
+  }
+
+  // Water_Pump
+  if(actuator.Water_Pump == true){
+    jsonDocument["WaterPump"] = "ON";
+  }else{
+    jsonDocument["WaterPump"] = "OFF";
+  }
+
+  // CPU Fan1
+  if(actuator.Cpu_Fan1 > 0 ){
+    jsonDocument["Fan1"] = "Working";
+  }else{
+    jsonDocument["Fan1"] = "Not Working";
+  }
+
+  // CPU Fan2
+  if(actuator.Cpu_Fan2 > 0 ){
+    jsonDocument["Fan2"] = "Working";
+  }else{
+    jsonDocument["Fan2"] = "Not Working";
+  }
+}
+
+
+

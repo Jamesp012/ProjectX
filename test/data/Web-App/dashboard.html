@@ -128,6 +128,7 @@
                     <p>Temperature</p>
                     <button class="indicator">HIGH</button>
                 </div>
+
             </div>
             <div id="dashboard-dashboard-bottom">
                 <div id="bottom-left">
@@ -137,32 +138,28 @@
                     </div>
                     <div id="bottom-left-content">
                         <div id="components">
+                            <p>DHT22 Temperature & Humidity</p>
+                            <p>Phtosensitive Resistor</p>
+                            <p>DS18B20 Temperature Sensor</p>
                             <p>Humidifier</p>
                             <p>Water Pump</p>
                             <p>LED Strip</p>
-                            <p>Humidifier</p>
-                            <p>Water Pump</p>
-                            <p>LED Strip</p>
-                            <p>Humidifier</p>
-                            <p>Water Pump</p>
-                            <p>LED Strip</p>
-                            <p>Humidifier</p>
-                            <p>Water Pump</p>
-                            <p>LED Strip</p>
+                            <p>Float Switch</p>
+                            <p>Heating Element & Heating Element</p>
+                            <p>Fan 1</p>
+                            <p>Fan 2</p>
                         </div>
                         <div id="remarks">
-                            <p>ON</p>
-                            <p>ON</p>
-                            <p>OFF</p>
-                            <p>ON</p>
-                            <p>ON</p>
-                            <p>OFF</p>
-                            <p>ON</p>
-                            <p>ON</p>
-                            <p>OFF</p>
-                            <p>ON</p>
-                            <p>ON</p>
-                            <p>OFF</p>
+                            <p id="dht22State">Working</p>
+                            <p id="ldrState">Working</p>
+                            <p id="ds18b20State">Working</p>
+                            <p id="humidifierState">Working</p>
+                            <p id="waterpumpState">Working</p>
+                            <p id="ledState">Working</p>
+                            <p id="floatswitchState">Working</p>
+                            <p id="heatingelementState">Working</p>
+                            <p id="fan1State">Working</p>
+                            <p id="fan2State">Working</p>
                         </div>
                     </div>
                 </div>
@@ -192,6 +189,10 @@
                 $('#DHTtempC').val(DHTtempC);
                 $('#DHThumid').val(DHThumid);
                 $('#DStempC').val(DStempC);
+
+                if(DHTtempC > 0){
+                    
+                }
             })
         });
     </script>
