@@ -15,12 +15,9 @@ struct UserData {
   char password[50];
 };
 
-// const char* ssid = "GomezCorRegidor";
-// const char* password = "MOneKTreyding";
-
 ESP8266WebServer server(80);
 bool loggedIn = false;
-bool accountCreated = false; // Flag to track if an account has been created
+bool accountCreated = false;
 
 WiFiUDP udp;
 IPAddress timeServer(132, 163, 4, 101); // NTP server address (NTP.PH.NET)
@@ -28,136 +25,85 @@ IPAddress timeServer(132, 163, 4, 101); // NTP server address (NTP.PH.NET)
 const int NTP_PACKET_SIZE = 48;
 byte packetBuffer[NTP_PACKET_SIZE];
 
+// Function prototypes
+void handleLoginPost();
+bool checkCredentials(const String &username, const String &password);
+void handleLogin();
+void handleLogout();
+void handleForgotPassword();
+void handleCreateAccount();
+void handleRegister();
+void redirectToLogin();
+void clearEEPROM();
+void sendNTPpacket();
+void printTime(unsigned long epoch);
+void handleNotFound();
+void handleGetSensorData();
+
 void setup() {
-    Serial.begin(9600);
+  Serial.begin(9600);
+  WiFiManager wm;
+  wm.resetSettings(); // For testing, to clear stored credentials
 
-    /WiFiManager, Local intialization. Once its business is done, there is no need to keep it around
-    WiFiManager wm;
-
-    // reset settings - wipe stored credentials for testing
-    // these are stored by the esp library
-    wm.resetSettings();
-
-    bool res;
-  res = wm.autoConnect("AutoConnectAP","password"); // password protected ap
-  if(!res) {
+  bool res = wm.autoConnect("AutoConnectAP", "password");
+  if (!res) {
     Serial.println("Failed to connect");
-    // ESP.restart();
-  }else {
-    //if you get here you have connected to the WiFi    
-    Serial.println("connected...yeey :)");
-
-    // Initialize SPIFFS
+  } else {
+    Serial.println("Connected to WiFi");
     if (!SPIFFS.begin()) {
       Serial.println("Failed to mount SPIFFS");
       return;
     }
-
-    // Initialize EEPROM
     EEPROM.begin(EEPROM_SIZE);
-    // // Clear EEPROM data 
-    // clearEEPROM(); ---------------------------REMOVE THIS FOR DEBUGGING EEPROM------------------------------------
 
-    // Set up routes to serve CSS and image files from SPIFFS
     server.on("/style.css", HTTP_GET, []() {
-      Serial.println("Serving style.css");
       serveFile("dist/style.css");
     });
-
-    // Login route
     server.on("/login", HTTP_POST, handleLoginPost);
     server.on("/", HTTP_GET, handleLogin);
-
-    // Dashboard route - accessible only if logged in
     server.on("/dashboard", HTTP_GET, []() {
       if (loggedIn) {
-        Serial.println("Serving dashboard.html");
         serveFile("Web-App/dashboard.html");
       } else {
         redirectToLogin();
       }
     });
-
-    // Forgot password route
     server.on("/forgot-password", HTTP_GET, handleForgotPassword);
-
-    // Create account route
     server.on("/create-account", HTTP_GET, handleCreateAccount);
-
-    // Logout route
     server.on("/logout", HTTP_GET, handleLogout);
-
-    // Registration route
     server.on("/register", HTTP_POST, handleRegister);
-
-    // Set up routes of the DATA
     server.on("/get-sensor-data", HTTP_GET, handleGetSensorData);
-
-    // Set up endpoint to serve PNG images
     server.on("/images", HTTP_GET, []() {
-      Serial.println("Serving images");
       serveImages();
     });
 
-
-    // Connect to WiFi
-    // WiFi.begin(ssid, password);
-    // Serial.println("Connecting to WiFi");
-    // while (WiFi.status() != WL_CONNECTED) {
-    //   delay(1000);
-    //   Serial.print(".");
-    // }
-    // Serial.println("Connected to WiFi");
-
-    // Start server
     server.begin();
     Serial.println("HTTP server started");
 
-    // Initialize UDP
     udp.begin(123);
 
-    //display ip address
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
-   
-    }
-
+  }
 }
 
 void loop() {
-
-    // Send NTP request
-    sendNTPpacket();
-
-    // Wait for response
-    delay(1000);
-
-    // Check if a response is available
-    int packetSize = udp.parsePacket();
-    if (packetSize) {
-        // Read response into buffer
-        udp.read(packetBuffer, NTP_PACKET_SIZE);
-
-        // Extract time from response (seconds since Jan 1, 1900)
-        unsigned long secsSince1900 = (unsigned long)packetBuffer[40] << 24 |
+  sendNTPpacket();
+  delay(1000);
+  int packetSize = udp.parsePacket();
+  if (packetSize) {
+    udp.read(packetBuffer, NTP_PACKET_SIZE);
+    unsigned long secsSince1900 = (unsigned long)packetBuffer[40] << 24 |
                                     (unsigned long)packetBuffer[41] << 16 |
                                     (unsigned long)packetBuffer[42] << 8 |
                                     (unsigned long)packetBuffer[43];
-
-        // Convert NTP time to Unix time (seconds since Jan 1, 1970)
-        const unsigned long seventyYears = 2208988800UL;
-        unsigned long epoch = secsSince1900 - seventyYears;
-
-        // Apply GMT+8 offset
-        epoch += 8 * 3600;
-
-        // Print current time
-        Serial.print("Current time (GMT+8): ");
-        printTime(epoch);
-    }
-
-    //Handle Webpages
-    server.handleClient();
+    const unsigned long seventyYears = 2208988800UL;
+    unsigned long epoch = secsSince1900 - seventyYears;
+    epoch += 8 * 3600;
+    Serial.print("Current time (GMT+8): ");
+    printTime(epoch);
+  }
+  server.handleClient();
 }
 
 void serveFile(String filePath) {
@@ -195,7 +141,6 @@ void serveImages() {
 String getContentType(String filename) {
   if (filename.endsWith(".css")) return "text/css";
   else if (filename.endsWith(".png")) return "image/png"; // Fixed syntax here
-  // Add more content types as needed
   return "text/html"; // Default to HTML content type
 }
 
@@ -219,22 +164,25 @@ void handleLoginPost() {
   }
 }
 
+bool checkCredentials(const String &username, const String &password) {
+  if (server.method() == HTTP_POST) {
+    String user = server.arg("username");
+    String pass = server.arg("password");
 
-bool checkCredentials(String username, String password) {
-  // Read user data from EEPROM
-  UserData storedUserData;
-  EEPROM.get(EEPROM_USER_DATA_ADDRESS, storedUserData);
+    Serial.print("Received Username: ");
+    Serial.println(user);
+    Serial.print("Received Password: ");
+    Serial.println(pass);
 
-  Serial.print("Stored Username: ");
-  Serial.println(storedUserData.username);
-  Serial.print("Stored Password: ");
-  Serial.println(storedUserData.password);
-
-  // Compare with provided credentials
-  return (strcmp(username.c_str(), storedUserData.username) == 0 &&
-          strcmp(password.c_str(), storedUserData.password) == 0);
+    if (checkCredentials(user, pass)) {
+      loggedIn = true;
+      server.sendHeader("Location", "/dashboard", true); // Redirect to dashboard after login
+      server.send(302, "text/plain", "");
+    } else {
+      server.send(401, "text/plain", "Unauthorized"); // Unauthorized
+    }
+  }
 }
-
 
 void handleLogin() {
   Serial.println("Serving login.html");
@@ -291,8 +239,7 @@ void handleRegister() {
   }
 }
 
-
-void storeUserData(UserData userData) {
+void storeUserData(const UserData &userData) {
   EEPROM.put(EEPROM_USER_DATA_ADDRESS, userData);
   EEPROM.commit();
 }
@@ -302,7 +249,6 @@ void redirectToLogin() {
   server.send(302, "text/plain", "");
 }
 
-// Removing username, password, and email from EEPROM
 void clearEEPROM() {
   UserData emptyUserData;
   memset(emptyUserData.email, 0, sizeof(emptyUserData.email)); // Clear email
@@ -313,12 +259,6 @@ void clearEEPROM() {
   EEPROM.commit();
 }
 
-void handleNotFound() {
-  server.send(404, "text/plain", "Not found");
-}
-
-
-// Function for getting time
 void sendNTPpacket() {
   memset(packetBuffer, 0, NTP_PACKET_SIZE);
   packetBuffer[0] = 0b11100011;
@@ -346,16 +286,9 @@ void printTime(unsigned long epoch) {
   Serial.println();
 }
 
-void printDigits(int digits) {
-  // utility function for digital clock display: prints preceding colon and leading 0
-  Serial.print(":");
-  if (digits < 10)
-    Serial.print('0');
-  Serial.print(digits);
+void handleNotFound() {
+  server.send(404, "text/plain", "Not found");
 }
-
-// _______________________________________________
-
 
 void handleGetSensorData() {
   // Create a JSON object
@@ -431,14 +364,24 @@ void handleGetSensorData() {
     jsonDocument["WaterPump"] = "OFF";
   }
 
-  // CPU Fan
+  // CPU Fan1
   if(actuator.Cpu_Fan1 > 0 ){
-    jsonDocument["Fan"] = "Working";
+    jsonDocument["Fan1"] = "Working";
   }else{
-    jsonDocument["Fan"] = "Not Working";
+    jsonDocument["Fan1"] = "Not Working";
   }
 
+  // CPU Fan2
+  if(actuator.Cpu_Fan2 > 0 ){
+    jsonDocument["Fan2"] = "Working";
+  }else{
+    jsonDocument["Fan2"] = "Not Working";
+  }
+  
+  // Serialize JSON to a string
+  String jsonString;
+  serializeJson(jsonDocument, jsonString);
+
+  // Send JSON response
+  server.send(200, "application/json", jsonString)
 }
-
-
-

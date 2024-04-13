@@ -5,17 +5,16 @@
 
 
 // PINS
-// 1. DHT =  2
+// 1.  sensor.DHT22Humid, sensor.DHT22TempC =  2
 // 2. DS18B20 =  3
-// 3. PHOTOSENSITIVE RESISTOR = A0
-// 4. WATER PUMP = 22
-// 5. FLOAT SWITCH (MAIN) = 51
-// 6. FLOAT SWITHC (RESERVE) = 52
-// 7. HEATING ELEMENT = 4
-// 8. FAN 1 = 5
-// 9. FAN 2 = 6
-// 10. LED 1 = 7
-// 11. LED 2 = 8
+// 3. LDR_PIN = A0
+// 4. PUMP_PIN = 22
+// 5. FloatMain = 51
+// 6. FloatReserve = 52
+// 7. HeatingElement = 4
+// 8. Fan = 5
+// 9. Led = 6
+
 
 #define DHTTYPE DHT22
 
