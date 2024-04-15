@@ -19,10 +19,10 @@
         </div>
         <div class="container">
             <div>
-                <div id="settings">
+                <!-- <div id="settings">
                     <img src="/Web-App/assets/icons8-settings-48 (1).png" alt="">
                     <p>Settings</p>
-                </div>
+                </div> -->
                 <div id="logout">
                     <img src="/Web-App/assets/icons8-logout-64-new.png" alt="">
                     <p>Logout</p>
@@ -134,7 +134,7 @@
                 <div id="bottom-left">
                     <div id="bottom-left-header">
                         <h4>COMPONENTS</h4>
-                        <h4>REMARKS</h4>
+                        <h4>Reading/Remarks</h4>
                     </div>
                     <div id="bottom-left-content">
                         <div id="components">
@@ -150,16 +150,16 @@
                             <p>Fan 2</p>
                         </div>
                         <div id="remarks">
-                            <p id="dht22State">Working</p>
-                            <p id="ldrState">Working</p>
-                            <p id="ds18b20State">Working</p>
-                            <p id="humidifierState">Working</p>
-                            <p id="waterpumpState">Working</p>
-                            <p id="ledState">Working</p>
-                            <p id="floatswitchState">Working</p>
-                            <p id="heatingelementState">Working</p>
-                            <p id="fan1State">Working</p>
-                            <p id="fan2State">Working</p>
+                            <p id="dht22State"></p>
+                            <p id="ldrState"></p>
+                            <p id="ds18b20State"></p>
+                            <p id="humidifierState"></p>
+                            <p id="waterpumpState"></p>
+                            <p id="ledState"></p>
+                            <p id="floatswitchState"></p>
+                            <p id="heatingelementState"></p>
+                            <p id="fan1State"></p>
+                            <p id="fan2State"></p>
                         </div>
                     </div>
                 </div>
@@ -174,27 +174,41 @@
     </div>
 
     <script>
-        document.getElementById("settings").onclick = function() {
-            var dropdown = document.getElementsByClassName("dropdown-content")[0];
-            dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
-        };
-
-        $(document).ready(function(){
-            // Make an AJAX request to fetch sensor data
-            $.getJSON("/get-sensor-data", function(data){
-                var DHTtempC = data.DHT22TempC;
-                var DHThumid = data.DHT22Humid;
-                var DStempC = data.DS18B20TempC;
-
-                $('#DHTtempC').val(DHTtempC);
-                $('#DHThumid').val(DHThumid);
-                $('#DStempC').val(DStempC);
-
-                if(DHTtempC > 0){
-                    
+        function fetchData(){
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/data", true);
+            xhr.onreadystatechange = function (){
+                if(xhr.readyState === XMLHttpRequest.DONE){
+                    if(xhr.status === 200){
+                        var data = JSON.parse(xhr.responseText);
+                        processData(data);
+                    } else {
+                        console.error("Failed to fetch data");
+                    }
                 }
-            })
-        });
+            };
+            xhr.send();
+        }
+
+        function processData(data){
+            if(data) {
+                // Update your HTML elements with the received data
+                document.getElementById("DHTtempC").innerText = data.DHT22TempC;
+                document.getElementById("DHThumid").innerText = data.DHT22Humid;
+                document.getElementById("DStempC").innerText = data.DS18B20TempC;
+                document.getElementById("dht22State").innerText = data.DHT22State;
+                document.getElementById("ldrState").innerText = data.LDRState;
+                document.getElementById("ds18b20State").innerText = data.DS18B20State;
+                document.getElementById("humidifierState").innerText = data.UltrasonicAtomizerState;
+                document.getElementById("waterpumpState").innerText = data.WaterPumpState;
+                document.getElementById("ledState").innerText = data.LEDLightState;
+                document.getElementById("floatswitchState").innerText = data.FloatRState;
+                document.getElementById("heatingelementState").innerText = data.HeatingElementState;
+                document.getElementById("fan1State").innerText = data.FanState;
+            }
+        }
+
+        setInterval(fetchData, 5000); // Fetch data every 5 seconds
     </script>
 </body>
 </html>

@@ -4,6 +4,27 @@
 #include <FS.h>
 #include <EEPROM.h>
 #include <ArduinoJson.h>
+#include <WiFiUdp.h>
+#include <TimeLib.h>
+
+
+// NTP Servers:
+static const char ntpServerName[] = "us.pool.ntp.org";
+//static const char ntpServerName[] = "time.nist.gov";
+//static const char ntpServerName[] = "time-a.timefreq.bldrdoc.gov";
+//static const char ntpServerName[] = "time-b.timefreq.bldrdoc.gov";
+//static const char ntpServerName[] = "time-c.timefreq.bldrdoc.gov";
+
+
+const int timeZone = 8;     // Philippine Standard Time 
+
+WiFiUDP Udp;
+unsigned int localPort = 8888;  // local port to listen for UDP packets
+
+time_t getNtpTime();
+void digitalClockDisplay();
+void printDigits(int digits);
+void sendNTPpacket(IPAddress &address);
 
 // Define EEPROM address to store user data
 #define EEPROM_SIZE 512
@@ -82,28 +103,47 @@ void setup() {
 
     udp.begin(123);
 
-    Serial.print("IP address: ");
+    Serial.print("Local Website Started @");
     Serial.println(WiFi.localIP());
+    // Connecting UDP port
+    Serial.println("Starting UDP");
+    Udp.begin(localPort);
+    Serial.print("Local port: ");
+    Serial.println(Udp.localPort());
+    Serial.println("waiting for sync");
+    setSyncProvider(getNtpTime);
+    setSyncInterval(300);
   }
 }
 
+time_t prevDisplay = 0; // when the digital clock was displayed
+
 void loop() {
-  sendNTPpacket();
-  delay(1000);
-  int packetSize = udp.parsePacket();
-  if (packetSize) {
-    udp.read(packetBuffer, NTP_PACKET_SIZE);
-    unsigned long secsSince1900 = (unsigned long)packetBuffer[40] << 24 |
-                                    (unsigned long)packetBuffer[41] << 16 |
-                                    (unsigned long)packetBuffer[42] << 8 |
-                                    (unsigned long)packetBuffer[43];
-    const unsigned long seventyYears = 2208988800UL;
-    unsigned long epoch = secsSince1900 - seventyYears;
-    epoch += 8 * 3600;
-    Serial.print("Current time (GMT+8): ");
-    printTime(epoch);
-  }
   server.handleClient();
+
+
+  // For the timer display
+  if (timeStatus() != timeNotSet) {
+    if (now() != prevDisplay) { //update the display only if time has changed
+      prevDisplay = now();
+      digitalClockDisplay();
+    }
+  }
+}
+
+void digitalClockDisplay()
+{
+  // digital clock display of the time
+  Serial.print(hour());
+  printDigits(minute());
+  printDigits(second());
+  Serial.print(" ");
+  Serial.print(day());
+  Serial.print(".");
+  Serial.print(month());
+  Serial.print(".");
+  Serial.print(year());
+  Serial.println();
 }
 
 void serveFile(String filePath) {
@@ -117,7 +157,7 @@ void serveFile(String filePath) {
 }
 
 void serveImages() {
-  Serial.println("Scanning images directory");
+  // Serial.println("Scanning images directory");
   Dir dir = SPIFFS.openDir("/assets");
   server.setContentLength(CONTENT_LENGTH_UNKNOWN);
   server.sendHeader("Content-Disposition", "inline");
@@ -125,11 +165,11 @@ void serveImages() {
   while (dir.next()) {
     String fileName = dir.fileName();
     if (fileName.endsWith(".png")) {
-      Serial.print("Serving image: ");
-      Serial.println(fileName);
+      // Serial.print("Serving image: ");
+      // Serial.println(fileName);
       File file = SPIFFS.open(fileName, "r");
       if (!file) {
-        Serial.println("Failed to open file");
+        // Serial.println("Failed to open file");
         return;
       }
       server.streamFile(file, "image/png");
@@ -178,10 +218,13 @@ bool checkCredentials(const String &username, const String &password) {
       loggedIn = true;
       server.sendHeader("Location", "/dashboard", true); // Redirect to dashboard after login
       server.send(302, "text/plain", "");
+      return true;
     } else {
-      server.send(401, "text/plain", "Unauthorized"); // Unauthorized
+      server.send(401, "text/plain", "Unauthorized", false); // Unauthorized
+      return false;
     }
   }
+  return false;
 }
 
 void handleLogin() {
@@ -259,20 +302,26 @@ void clearEEPROM() {
   EEPROM.commit();
 }
 
-void sendNTPpacket() {
+// send an NTP request to the time server at the given address
+void sendNTPpacket(IPAddress &address){
+  // set all bytes in the buffer to 0
   memset(packetBuffer, 0, NTP_PACKET_SIZE);
-  packetBuffer[0] = 0b11100011;
-  packetBuffer[1] = 0;
-  packetBuffer[2] = 6;
-  packetBuffer[3] = 0xEC;
+  // Initialize values needed to form NTP request
+  // (see URL above for details on the packets)
+  packetBuffer[0] = 0b11100011;   // LI, Version, Mode
+  packetBuffer[1] = 0;     // Stratum, or type of clock
+  packetBuffer[2] = 6;     // Polling Interval
+  packetBuffer[3] = 0xEC;  // Peer Clock Precision
+  // 8 bytes of zero for Root Delay & Root Dispersion
   packetBuffer[12] = 49;
   packetBuffer[13] = 0x4E;
   packetBuffer[14] = 49;
   packetBuffer[15] = 52;
-
-  udp.beginPacket(timeServer, 123);
-  udp.write(packetBuffer, NTP_PACKET_SIZE);
-  udp.endPacket();
+  // all NTP fields have been given values, now
+  // you can send a packet requesting a timestamp:
+  Udp.beginPacket(address, 123); //NTP requests are to port 123
+  Udp.write(packetBuffer, NTP_PACKET_SIZE);
+  Udp.endPacket();
 }
 
 void printTime(unsigned long epoch) {
@@ -281,107 +330,67 @@ void printTime(unsigned long epoch) {
   
   // Print time in HH:MM:SS format
   Serial.print(hour());
-  printDigits(minute());
-  printDigits(second());
-  Serial.println();
+  // printDigits(minute());
+  // printDigits(second());
+
+
+  if(hour() >= 7 && hour() <= 17){
+    // Send the Time in the Serial.
+    Serial.print(hour());
+    Serial.println();
+  }
+}
+
+void printDigits(int digits){
+  // utility for digital clock display: prints preceding colon and leading 0
+  Serial.print(":");
+  if (digits < 10)
+    Serial.print('0');
+  Serial.print(digits);
+}
+
+time_t getNtpTime(){
+  IPAddress ntpServerIP; // NTP server's ip address
+
+  while (Udp.parsePacket() > 0) ; // discard any previously received packets
+  Serial.println("Transmit NTP Request");
+  // get a random server from the pool
+  WiFi.hostByName(ntpServerName, ntpServerIP);
+  Serial.print(ntpServerName);
+  Serial.print(": ");
+  Serial.println(ntpServerIP);
+  sendNTPpacket(ntpServerIP);
+  uint32_t beginWait = millis();
+  while (millis() - beginWait < 1500) {
+    int size = Udp.parsePacket();
+    if (size >= NTP_PACKET_SIZE) {
+      Serial.println("Receive NTP Response");
+      Udp.read(packetBuffer, NTP_PACKET_SIZE);  // read packet into the buffer
+      unsigned long secsSince1900;
+      // convert four bytes starting at location 40 to a long integer
+      secsSince1900 =  (unsigned long)packetBuffer[40] << 24;
+      secsSince1900 |= (unsigned long)packetBuffer[41] << 16;
+      secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
+      secsSince1900 |= (unsigned long)packetBuffer[43];
+      return secsSince1900 - 2208988800UL + timeZone * SECS_PER_HOUR;
+    }
+  }
+  Serial.println("No NTP Response :-(");
+  return 0; // return 0 if unable to get the time
 }
 
 void handleNotFound() {
   server.send(404, "text/plain", "Not found");
 }
 
+
+//Receive the data from the arduino and pass to webserver using AJAX
 void handleGetSensorData() {
-  // Create a JSON object
-  StaticJsonDocument<200> jsonDocument;
 
-  //Populate JSON object with sensor data
-  jsonDocument["DHT22TempC"] = sensor.DHT22TempC;
-  jsonDocument["DHT22Humid"] = sensor.DHT22Humid;
-  jsonDocument["DS18B20TempC"] = sensor.DS18B20TempC;
+  // Read the incoming data
+  String jsonData = Serial.readStringUntil('\n');
 
-  //DHT22 remarks
-  if(sensor.DHT22TempC > 0){
-    jsonDocument["DHT22State"] = "Working";
-  }else{
-    jsonDocument["DHT22State"] = "Not working";
-  }
+  // Send the JSON string in the HTTP response
+  server.send(200, "application/json", jsonData);
 
-  //DS18B20 remarks 
-  if(sensor.DS18B20TempC > 0){
-    jsonDocument["DS18B20State"] = "Working";
-  }else{
-    jsonDocument["DS18B20State"] = "Not working";
-  }
-
-  //LDR remarks
-  if(sensor.LDR > 0){
-    jsonDocument["LDRState"] = "Working";
-  }else{
-    jsonDocument["LDRState"] = "Not working";
-  }
-
-  // Float Switch RESERVED remarks
-  if(sensor.FloatR == true){
-    jsonDocument["FloatR"] = "OFF";
-  }else{
-    jsonDocument["FloatR"] = "ON";
-  }
-
-  // Float Switch MAIN remarks
-  if(sensor.FloatM == true){
-    jsonDocument["FloatM"] = "OFF";
-  }else{
-    jsonDocument["FloatM"] = "ON";
-  }
-
-  // Heating Element remarks
-  if(sensor.DS18B20TempC > 0 && DHTReading == 1){
-    jsonDocument["HeatingElement"] = "Heating";
-  }else if(sensor.DS18B20TempC > 0 && DHTReading == 2){
-    jsonDocument["HeatingElement"] = "Stabilizing"
-  }else if(sensor.DS18B20TempC > 0 && DHTReading == 3){
-    jsonDocument["HeatingElement"] = "Cooling" 
-  }
-
-  // LED_Light remarks
-  if(actuator.LED_Light == true){
-    jsonDocument["LEDLight"] = "ON";
-  }else{
-    jsonDocument["LEDLight"] = "OFF";
-  }
-
-  // Ultasonic Atomizer remarks
-  if(actuator.Ultrasonic_Atomizer == true){
-    jsonDocument["UltrasonicAtomizer"] = "ON";
-  }else{
-    jsonDocument["UltrasonicAtomizer"] = "OFF";
-  }
-
-  // Water_Pump
-  if(actuator.Water_Pump == true){
-    jsonDocument["WaterPump"] = "ON";
-  }else{
-    jsonDocument["WaterPump"] = "OFF";
-  }
-
-  // CPU Fan1
-  if(actuator.Cpu_Fan1 > 0 ){
-    jsonDocument["Fan1"] = "Working";
-  }else{
-    jsonDocument["Fan1"] = "Not Working";
-  }
-
-  // CPU Fan2
-  if(actuator.Cpu_Fan2 > 0 ){
-    jsonDocument["Fan2"] = "Working";
-  }else{
-    jsonDocument["Fan2"] = "Not Working";
-  }
-  
-  // Serialize JSON to a string
-  String jsonString;
-  serializeJson(jsonDocument, jsonString);
-
-  // Send JSON response
-  server.send(200, "application/json", jsonString)
 }
